@@ -1,0 +1,228 @@
+<ref *1> Request {
+  domain: null,
+  service: Service {
+    config: Config {
+      credentials: [SharedIniFileCredentials],
+      credentialProvider: [CredentialProviderChain],
+      region: 'eu-west-2',
+      logger: null,
+      apiVersions: {},
+      apiVersion: null,
+      endpoint: 'cloudformation.eu-west-2.amazonaws.com',
+      httpOptions: [Object],
+      maxRetries: undefined,
+      maxRedirects: 10,
+      paramValidation: true,
+      sslEnabled: true,
+      s3ForcePathStyle: false,
+      s3BucketEndpoint: false,
+      s3DisableBodySigning: true,
+      s3UsEast1RegionalEndpoint: 'legacy',
+      s3UseArnRegion: undefined,
+      computeChecksums: true,
+      convertResponseTypes: true,
+      correctClockSkew: false,
+      customUserAgent: null,
+      dynamoDbCrc32: true,
+      systemClockOffset: 0,
+      signatureVersion: 'v4',
+      signatureCache: true,
+      retryDelayOptions: {},
+      useAccelerateEndpoint: false,
+      clientSideMonitoring: false,
+      endpointDiscoveryEnabled: undefined,
+      endpointCacheSize: 1000,
+      hostPrefixEnabled: true,
+      stsRegionalEndpoints: 'legacy',
+      useFipsEndpoint: false,
+      useDualstackEndpoint: false
+    },
+    isGlobalEndpoint: false,
+    endpoint: Endpoint {
+      protocol: 'https:',
+      host: 'cloudformation.eu-west-2.amazonaws.com',
+      port: 443,
+      hostname: 'cloudformation.eu-west-2.amazonaws.com',
+      pathname: '/',
+      path: '/',
+      href: 'https://cloudformation.eu-west-2.amazonaws.com/'
+    },
+    _events: { apiCallAttempt: [Array], apiCall: [Array] },
+    MONITOR_EVENTS_BUBBLE: [Function: EVENTS_BUBBLE],
+    CALL_EVENTS_BUBBLE: [Function: CALL_EVENTS_BUBBLE],
+    _clientId: 1
+  },
+  operation: 'describeStacks',
+  params: { StackName: 'hello' },
+  httpRequest: HttpRequest {
+    method: 'POST',
+    path: '/',
+    headers: {
+      'User-Agent': 'aws-sdk-nodejs/2.1095.0 darwin/v17.0.1 callback',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+      'X-Amz-Content-Sha256': '0336dc0845328bed5d69f907a1d3d2fa8ff132e994fc0595fe8064f42123a673',
+      'Content-Length': 56,
+      Host: 'cloudformation.eu-west-2.amazonaws.com',
+      'X-Amz-Date': '20220317T155652Z',
+      Authorization: 'AWS4-HMAC-SHA256 Credential=AKIA6KKWJZNC2ZR6TY2B/20220317/eu-west-2/cloudformation/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=51a930b8073f2ac6fffab67511aa2bcc4580c4edf9831e203410280ce4cd0ce9'
+    },
+    body: 'Action=DescribeStacks&StackName=hello&Version=2010-05-15',
+    endpoint: {
+      protocol: 'https:',
+      host: 'cloudformation.eu-west-2.amazonaws.com',
+      port: 443,
+      hostname: 'cloudformation.eu-west-2.amazonaws.com',
+      pathname: '/',
+      path: '/',
+      href: 'https://cloudformation.eu-west-2.amazonaws.com/',
+      constructor: [Function]
+    },
+    region: 'eu-west-2',
+    _userAgent: 'aws-sdk-nodejs/2.1095.0 darwin/v17.0.1 callback',
+    params: {
+      Version: '2010-05-15',
+      Action: 'DescribeStacks',
+      StackName: 'hello'
+    },
+    stream: ClientRequest {
+      _events: [Object: null prototype],
+      _eventsCount: 7,
+      _maxListeners: undefined,
+      outputData: [Array],
+      outputSize: 648,
+      writable: true,
+      destroyed: false,
+      _last: false,
+      chunkedEncoding: false,
+      shouldKeepAlive: true,
+      maxRequestsOnConnectionReached: false,
+      _defaultKeepAlive: true,
+      useChunkedEncodingByDefault: true,
+      sendDate: false,
+      _removedConnection: false,
+      _removedContLen: false,
+      _removedTE: false,
+      _contentLength: 56,
+      _hasBody: true,
+      _trailer: '',
+      finished: true,
+      _headerSent: true,
+      _closed: false,
+      socket: null,
+      _header: 'POST / HTTP/1.1\r\n' +
+        'User-Agent: aws-sdk-nodejs/2.1095.0 darwin/v17.0.1 callback\r\n' +
+        'Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n' +
+        'X-Amz-Content-Sha256: 0336dc0845328bed5d69f907a1d3d2fa8ff132e994fc0595fe8064f42123a673\r\n' +
+        'Content-Length: 56\r\n' +
+        'Host: cloudformation.eu-west-2.amazonaws.com\r\n' +
+        'X-Amz-Date: 20220317T155652Z\r\n' +
+        'Authorization: AWS4-HMAC-SHA256 Credential=AKIA6KKWJZNC2ZR6TY2B/20220317/eu-west-2/cloudformation/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=51a930b8073f2ac6fffab67511aa2bcc4580c4edf9831e203410280ce4cd0ce9\r\n' +
+        'Connection: keep-alive\r\n' +
+        '\r\n',
+      _keepAliveTimeout: 0,
+      _onPendingData: [Function: nop],
+      agent: [Agent],
+      socketPath: undefined,
+      method: 'POST',
+      maxHeaderSize: undefined,
+      insecureHTTPParser: undefined,
+      path: '/',
+      _ended: false,
+      res: null,
+      aborted: false,
+      timeoutCb: [Function: emitRequestTimeout],
+      upgradeOrConnect: false,
+      parser: null,
+      maxHeadersCount: null,
+      reusedSocket: false,
+      host: 'cloudformation.eu-west-2.amazonaws.com',
+      protocol: 'https:',
+      didCallback: false,
+      [Symbol(kCapture)]: false,
+      [Symbol(kNeedDrain)]: false,
+      [Symbol(corked)]: 0,
+      [Symbol(kOutHeaders)]: [Object: null prototype]
+    }
+  },
+  startTime: 2022-03-17T15:56:52.857Z,
+  response: Response {
+    request: [Circular *1],
+    data: null,
+    error: null,
+    retryCount: 0,
+    redirectCount: 0,
+    httpResponse: HttpResponse {
+      statusCode: undefined,
+      headers: {},
+      body: undefined,
+      streaming: false,
+      stream: null,
+      _abortCallback: [Function: callNextListener]
+    },
+    maxRetries: 3,
+    maxRedirects: 10
+  },
+  _asm: AcceptorStateMachine {
+    currentState: 'send',
+    states: {
+      validate: [Object],
+      build: [Object],
+      afterBuild: [Object],
+      sign: [Object],
+      retry: [Object],
+      afterRetry: [Object],
+      send: [Object],
+      validateResponse: [Object],
+      extractError: [Object],
+      extractData: [Object],
+      restart: [Object],
+      success: [Object],
+      error: [Object],
+      complete: [Object]
+    }
+  },
+  _haltHandlersOnError: false,
+  _events: {
+    validate: [
+      [Function (anonymous)],
+      [Function],
+      [Function: VALIDATE_REGION],
+      [Function: BUILD_IDEMPOTENCY_TOKENS],
+      [Function: VALIDATE_PARAMETERS]
+    ],
+    afterBuild: [
+      [Function: COMPUTE_CHECKSUM],
+      [Function],
+      [Function: SET_CONTENT_LENGTH],
+      [Function: SET_HTTP_HOST]
+    ],
+    restart: [ [Function: RESTART] ],
+    sign: [ [Function (anonymous)], [Function], [Function] ],
+    validateResponse: [ [Function: VALIDATE_RESPONSE], [Function (anonymous)] ],
+    send: [ [Function] ],
+    httpHeaders: [ [Function: HTTP_HEADERS] ],
+    httpData: [ [Function: HTTP_DATA] ],
+    httpDone: [ [Function: HTTP_DONE] ],
+    retry: [
+      [Function: FINALIZE_ERROR],
+      [Function: INVALIDATE_CREDENTIALS],
+      [Function: EXPIRED_SIGNATURE],
+      [Function: CLOCK_SKEWED],
+      [Function: REDIRECT],
+      [Function: RETRY_CHECK],
+      [Function: API_CALL_ATTEMPT_RETRY]
+    ],
+    afterRetry: [ [Function] ],
+    build: [ [Function: buildRequest] ],
+    extractData: [ [Function: extractData], [Function: extractRequestId] ],
+    extractError: [ [Function: extractError], [Function: extractRequestId] ],
+    httpError: [ [Function: ENOTFOUND_ERROR] ],
+    success: [ [Function: API_CALL_ATTEMPT] ],
+    complete: [ [Function: API_CALL], [Function (anonymous)] ]
+  },
+  emit: [Function: emit],
+  API_CALL_ATTEMPT: [Function: API_CALL_ATTEMPT],
+  API_CALL_ATTEMPT_RETRY: [Function: API_CALL_ATTEMPT_RETRY],
+  API_CALL: [Function: API_CALL],
+  signedAt: 2022-03-17T15:56:52.860Z
+}
