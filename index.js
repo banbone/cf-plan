@@ -1,64 +1,82 @@
 'use-strict'
+const { 
+  CloudFormationClient, 
+  CreateChangeSetCommand, 
+  DescribeChangeSetCommand,
+  DescribeStacksCommand 
+} = require("@aws-sdk/client-cloudformation");
 const Table = require('./node_modules/easy-table');
-const AWS = require('./node_modules/aws-sdk');
 const args = require('./node_modules/minimist')(process.argv.slice(2))
 const template = args['template'];
 const droneTag = args['dronetag'];
 const stackName = args['stackname'];
-const paramFile = args['parameters'];
-const capabilities = args['capabilities']
+const capabilities = args['capabilities'];
+const templateParams = JSON.parse(args['parameters']);
+const templateTags = JSON.parse(args['tags']);
 
-// const readline = require('readline');
-// const process = require('process');
-// const changeset = require('temp/changeset.json');
-// const changes = changeset.Changes;
-// const chgNo = changes.length;
+const client = new CloudFormationClient();
 
-// console.log(template);
-const cfn = new AWS.CloudFormation();
-
-// generate changeset
-const params = {
-  ChangeSetName: `${stackName}-changeset-${droneTag}`,
-  StackName: stackName,
-  Capabilities: [
-    capabilities,
-  ],
-  ChangeSetType: "",
-  Parameters: paramFile.Parameters,
-  RollbackConfiguration: {
-    MonitoringTimeInMinutes: 'NUMBER_VALUE',
-    RollbackTriggers: [
-      {
-        Arn: 'STRING_VALUE',
-        Type: 'STRING_VALUE'
-      },
-    ]
-  },
-  Tags: paramFile.Tags,
-  TemplateBody: template,
-};
-
-// find out if stack already exists and set changeset type
-const stackParams = {
-  StackName: stackName
-};
-cfn.describeStacks(stackParams, function (err) {
-  if (err) {
-    if (err.code === "ValidationError") {
-      params.ChangeSetType = "CREATE";
-    };
-  } else {
-    params.ChangeSetType = "UPDATE";
+const describeStacks = async function() {
+  const stackParams = {
+    StackName: stackName
   };
-});
-console.log(params);
-// cfn.createChangeSet(params, function(err, data) {
-//   if (err) console.log(err, err.stack); // an error occurred
-//   else     console.log(data);           // successful response
-// });
+  const stacks = new DescribeStacksCommand(stackParams);
+  // const response = await client.send(stacks);
+  try {
+    const data = await client.send(stacks);
+    console.log("UPDATE");
+    return "UPDATE";
+  } catch (error) {
+    if (error.Code === "ValidationError") {
+      console.log("CREATE");
+      return "CREATE";
+    } else {
+      console.log(`Error - ${error.$metadata.httpStatusCode} - List stack operation failed`);
+      return;
+    }
+  };
+};
+describeStacks();
 
-// // generate resource table from changeset
+// const createChangeSet = async function() {
+//   const changeSetType = await describeStacks();
+//   const createParams = {
+//     ChangeSetName: `${stackName}-changeset-${droneTag}`,
+//     StackName: stackName,
+//     Capabilities: [
+//       capabilities,
+//     ],
+//     ChangeSetType: changeSetType,
+//     Parameters: templateParams,
+//     Tags: templateTags,
+//     TemplateBody: template
+//   };
+//   const create = new CreateChangeSetCommand(createParams);
+//   const response = await client.send(create);
+//   if (response.$metadata.httpStatusCode != 200) {
+//     console.error(`Error - ${response.$metadata.httpStatusCode} - changeset create failed`);
+//     return;
+//   } else {
+//     return response.Id;
+//   };
+// };
+
+// const describeChangeSet = async function() {
+//   const changesetId = await createChangeSet();
+//   const describeParams = {
+//     ChangeSetName: changesetId
+//   };
+//   const describe = new DescribeChangeSetCommand(describeParams);
+//   const response = await client.send(describe);
+//   if (response.$metadata.httpStatusCode != 200) {
+//     console.error(`Error - ${response.$metadata.httpStatusCode} - describe operation failed`);
+//     return;
+//   } else {
+//     return response.Changes;
+//   };
+// };
+
+// // // generate resource table from changeset
 // const printTable = function(deployment) {
 //   const t = new Table;
 //   deployment.forEach(function(item) {
@@ -70,6 +88,12 @@ console.log(params);
 //   console.log(t.toString());
 // };
 
-// // RENDER OUTPUT TO TERMINAL
-// console.log(`You have ${chgNo} changes to deploy.`);
-// printTable(changes);
+// // Print output to terminal
+// const renderOutput = async function() {
+//   const changes = await describeChangeSet();
+//   console.log(`You have ${changes.length} changes to deploy.`);
+//   printTable(changes);
+// };
+
+// renderOutput();
+// // // RENDER OUTPUT TO TERMINAL

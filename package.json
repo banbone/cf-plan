@@ -1,31 +1,6 @@
 {
-  "name": "cf-plan",
-  "version": "1.0.0",
-  "description": "like tf-plan but with cloudformation",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/banbone/cf-plan.git"
-  },
-  "keywords": [
-    "cloudformation",
-    "plan",
-    "cfn",
-    "cf",
-    "terraform",
-    "nodejs"
-  ],
-  "author": "banbone",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/banbone/cf-plan/issues"
-  },
-  "homepage": "https://github.com/banbone/cf-plan#readme",
   "dependencies": {
-    "aws-sdk": "^2.1095.0",
+    "@aws-sdk/client-cloudformation": "^3.54.1",
     "easy-table": "^1.2.0",
     "minimist": "^1.2.5"
   }
