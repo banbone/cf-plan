@@ -9,9 +9,13 @@ const {
 const Table = require('./node_modules/easy-table');
 const args = require('./node_modules/minimist')(process.argv.slice(2))
 const template = args['template'];
-const droneTag = args['dronetag'];
 const stackName = args['stackname'];
 const capabilities = args['capabilities'];
+const droneMeta = {
+  repoName: process.env.DRONE_REPO,
+  repoBranch: process.env.DRONE_BRANCH,
+  buildNo: process.env.DRONE_BUILD_NUMBER
+};
 const templateParams = JSON.parse(args['parameters']);
 const templateTags = JSON.parse(args['tags']);
 
@@ -19,7 +23,7 @@ const client = new CloudFormationClient();
 
 const createParams = async function() {
   const createChangeParams = {
-    ChangeSetName: `${stackName}-changeset-${droneTag}`,
+    ChangeSetName: `${stackName}-changeset-${droneMeta.buildNo}`,
     StackName: stackName,
     Capabilities: [
       capabilities,
@@ -81,10 +85,10 @@ const describeChangeSet = async function() {
   };
   const describe = new DescribeChangeSetCommand(describeParams);
   try {
-    console.log('INFO - Contacting AWS to compare resources - please wait ...');
+    console.log('INFO - Contacting AWS to compare resources - please wait (this can take up to 30s) ...');
     await waitUntilChangeSetCreateComplete({ client }, describeParams);
     const response = await client.send(describe);
-    changes = response.Changes;
+    changes = response;
   } catch (err) {
     console.error(err);
   } finally {
@@ -105,14 +109,32 @@ const printTable = function(deployment) {
   console.log(t.toString());
 };
 
+const buildDeployCmd = function(changeset) {
+  const deployCmd = `You will need at least AWS-CLI v1.15<, and your terminal session must be authenticated with IAM privileges allowing cloudformation:ExecuteChangeSet. 
+Run the following command in your terminal:
+
+aws cloudformation execute-change-set --change-set-name ${changeset.ChangeSetId} --no-disable-rollback`
+  const mergeCmd = `You will need to create a pull request for your branch and merge to master.
+Drone will automatically re-run the pipelines on a merge event - this is the drone build number you can deploy from`
+  let output;
+  if (droneMeta.repoBranch === "master") {
+    output = deployCmd;
+  } else {
+    output = mergeCmd;
+  };
+  return output;
+};
 // Print output to terminal
 const renderOutput = async function() {
   const changes = await describeChangeSet();
+  const deployInstruction = buildDeployCmd(changes);
   console.log('---');
-  console.log(`You have ${changes.length} changes to deploy`);
+  console.log(`You have ${changes.Changes.length} changes to deploy`);
   console.log('---');
-  printTable(changes);
+  printTable(changes.Changes);
+  console.log('---');
+  console.log("To apply CF:");
+  console.log(deployInstruction);
 };
-
 // // RENDER OUTPUT TO TERMINAL
 renderOutput();

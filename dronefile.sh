@@ -4,7 +4,6 @@ template=$(cat test-template.yml)
 params=$(jq -r '.Parameters' params.json)
 tags=$(jq -r '.Tags' params.json)
 node index.js --template "$template" \
-  --dronetag "12345" \
   --stackname "test-deploy" \
   --parameters "$params" \
   --tags "$tags" \
