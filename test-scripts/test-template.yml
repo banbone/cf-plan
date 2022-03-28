@@ -10,7 +10,6 @@ Resources:
       GroupName: sg1
       SecurityGroupEgress: 
         - CidrIp: '0.0.0.0/0'
-          DestinationSecurityGroupId: String
           FromPort: 80
           IpProtocol: tcp
           ToPort: 80

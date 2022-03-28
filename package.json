@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "^3.54.1",
+    "@aws-sdk/client-cloudformation": "^3.55.0",
     "easy-table": "^1.2.0",
-    "minimist": "^1.2.5"
+    "minimist": "^1.2.6"
   }
 }
