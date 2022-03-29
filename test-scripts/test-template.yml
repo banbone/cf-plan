@@ -10,7 +10,6 @@ Resources:
       GroupName: sg1
       SecurityGroupEgress: 
         - CidrIp: '0.0.0.0/0'
-          DestinationSecurityGroupId: String
           FromPort: 80
           IpProtocol: tcp
           ToPort: 80
@@ -101,53 +100,53 @@ Resources:
           ToPort: 22
       VpcId: !Ref CustomVpc
 
-  SecurityGroup7:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: sg7
-      SecurityGroupEgress:
-        - DestinationSecurityGroupId: !Ref SecurityGroup6
-          FromPort: 80
-          IpProtocol: tcp
-          ToPort: 80
-      SecurityGroupIngress:
-        - CidrIp: !Ref AdminIp
-          FromPort: 22
-          IpProtocol: tcp
-          ToPort: 22
-      VpcId: !Ref CustomVpc
+  # SecurityGroup7:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     GroupName: sg7
+  #     SecurityGroupEgress:
+  #       - DestinationSecurityGroupId: !Ref SecurityGroup6
+  #         FromPort: 80
+  #         IpProtocol: tcp
+  #         ToPort: 80
+  #     SecurityGroupIngress:
+  #       - CidrIp: !Ref AdminIp
+  #         FromPort: 22
+  #         IpProtocol: tcp
+  #         ToPort: 22
+  #     VpcId: !Ref CustomVpc
 
-  SecurityGroup8:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: sg8
-      SecurityGroupEgress:
-        - DestinationSecurityGroupId: !Ref SecurityGroup7
-          FromPort: 80
-          IpProtocol: tcp
-          ToPort: 80
-      SecurityGroupIngress:
-        - CidrIp: !Ref AdminIp
-          FromPort: 22
-          IpProtocol: tcp
-          ToPort: 22
-      VpcId: !Ref CustomVpc
+  # SecurityGroup8:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     GroupName: sg8
+  #     SecurityGroupEgress:
+  #       - DestinationSecurityGroupId: !Ref SecurityGroup7
+  #         FromPort: 80
+  #         IpProtocol: tcp
+  #         ToPort: 80
+  #     SecurityGroupIngress:
+  #       - CidrIp: !Ref AdminIp
+  #         FromPort: 22
+  #         IpProtocol: tcp
+  #         ToPort: 22
+  #     VpcId: !Ref CustomVpc
 
-  SecurityGroup9:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: sg9
-      SecurityGroupEgress:
-        - DestinationSecurityGroupId: !Ref SecurityGroup8
-          FromPort: 80
-          IpProtocol: tcp
-          ToPort: 80
-      SecurityGroupIngress:
-        - CidrIp: !Ref AdminIp
-          FromPort: 22
-          IpProtocol: tcp
-          ToPort: 22
-      VpcId: !Ref CustomVpc
+  # SecurityGroup9:
+  #   Type: AWS::EC2::SecurityGroup
+  #   Properties:
+  #     GroupName: sg9
+  #     SecurityGroupEgress:
+  #       - DestinationSecurityGroupId: !Ref SecurityGroup8
+  #         FromPort: 80
+  #         IpProtocol: tcp
+  #         ToPort: 80
+  #     SecurityGroupIngress:
+  #       - CidrIp: !Ref AdminIp
+  #         FromPort: 22
+  #         IpProtocol: tcp
+  #         ToPort: 22
+  #     VpcId: !Ref CustomVpc
 
   CustomVpc:
     Type: AWS::EC2::VPC
