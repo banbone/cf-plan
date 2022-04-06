@@ -14,4 +14,4 @@ ENV ENV="/root/.ashrc"
 
 RUN echo "alias cf-plan='node index.js'" > "$ENV"
 
-ENTRYPOINT /bin/ash
+ENTRYPOINT ["/bin/ash"]
