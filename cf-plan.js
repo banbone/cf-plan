@@ -2,10 +2,13 @@
 const fs = require('fs');
 const { 
   CloudFormationClient, 
-  CreateChangeSetCommand, 
+  CreateChangeSetCommand,
+  DeleteChangeSetCommand, 
   DescribeChangeSetCommand,
   DescribeStacksCommand,
-  waitUntilChangeSetCreateComplete,
+  DeleteStackCommand,
+  ListStackResourcesCommand,
+  waitUntilChangeSetCreateComplete
 } = require("@aws-sdk/client-cloudformation");
 const Table = require('./node_modules/easy-table');
 const commander = require('commander');
@@ -22,6 +25,8 @@ commander
 
 const options = commander.opts();
 const template = fs.readFileSync(options.template, 'utf8');
+const parameters = fs.readFileSync(options.parameters, 'utf8');
+const tags = fs.readFileSync(options.tags, 'utf8');
 const stackName = options.stackname;
 const [capabilities] = options.capabilities;
 
@@ -51,11 +56,11 @@ const createParams = async function() {
     ],
     TemplateBody: template
   };
-  if (options.parameters) {
-    createChangeParams.Parameters = JSON.parse(options.parameters);
+  if (parameters) {
+    createChangeParams.Parameters = JSON.parse(parameters);
   };
-  if (options.tags) {
-    createChangeParams.Tags = JSON.parse(options.tags);
+  if (tags) {
+    createChangeParams.Tags = JSON.parse(tags);
   };
   const describeStackParams = {
     StackName: stackName
@@ -63,14 +68,11 @@ const createParams = async function() {
   const describeStacks = new DescribeStacksCommand(describeStackParams);
   try {
     const response = await client.send(describeStacks);
-    console.log(response);
     if (response.$metadata.httpStatusCode === 200) {
       for (stack in response.Stacks) {
-        if (stack.StackName === createChangeParams.stackName && stack.StackStatus === 'REVIEW_IN_PROGRESS') {
-          createChangeParams.ChangeSetType = "CREATE";
-        } else if (stack.StackName === createChangeParams.stackName && stack.StackStatus != 'REVIEW_IN_PROGRESS') {
+        if (stack.StackName === createChangeParams.stackName && stack.StackStatus != 'REVIEW_IN_PROGRESS') {
           createChangeParams.ChangeSetType = "UPDATE"
-        };
+        }; 
       };
     } else {
       createChangeParams.ChangeSetType = "CREATE";
@@ -82,7 +84,7 @@ const createParams = async function() {
       console.error(`Client Error - code ${err.$metadata.httpStatusCode} - Failed to generate changeset.`);
     };
   } finally {
-    console.log('INFO - Enumerating template\n');
+    console.log('INFO - Enumerating template.\n');
     return createChangeParams;
   };
 };
@@ -95,9 +97,9 @@ const createChangeSet = async function() {
     const response = await client.send(create);
     changesetId = response.Id;
   } catch (err) {
-    console.error(`Error - ${err.$metadata.httpStatusCode} - changeset creation failed`);
+    console.error(`Error - ${err.$metadata.httpStatusCode} - changeset creation failed.`);
   } finally {
-    console.log('INFO - Generating Changeset\n');
+    console.log('INFO - Generating Changeset.\n');
     return changesetId;
   };
 };
@@ -136,6 +138,7 @@ const printTable = function(deployment) {
   console.log(t.toString());
 };
 
+// generate deployment message to be printed underneath changeset summary
 const buildDeployCmd = function(changeset) {
   const buildMeta = getBuildMeta(process.env);
   const deployCmd = `You will need at least AWS-CLI v1.15<, and your terminal session must be authenticated with IAM privileges allowing cloudformation:ExecuteChangeSet. 
@@ -143,7 +146,7 @@ Run the following command in your terminal:
 
 aws cloudformation execute-change-set --change-set-name ${changeset.ChangeSetId} --no-disable-rollback`
   const mergeCmd = `You will need to create a pull request for your branch and merge to master.
-Drone will automatically re-run the pipelines on a merge event and will echo the build command for you`
+Drone will automatically re-run the pipelines on a merge event and will echo the build command for you.`
   let output;
   if (buildMeta.repoBranch == "master" || buildMeta.repoBranch == "main") {
     output = deployCmd;
@@ -153,17 +156,80 @@ Drone will automatically re-run the pipelines on a merge event and will echo the
   return output;
 };
 
+// verifies if stack to be created is empty for the cleanup function
+const checkIfStackEmpty = async function ()  {
+  let stackDetails;
+  const cmdInput = {
+    StackName: stackName,
+  };
+  const listStackResources = new ListStackResourcesCommand(cmdInput);
+  try {
+    const response = await client.send(listStackResources);
+    stackDetails = response.StackResourceSummaries[0];
+  } catch (err) {
+    console.error(`Error - Cleanup unsuccessful.`);
+  } finally {
+    if (!stackDetails) {
+      return true
+    } else {
+      return false
+    }
+  };
+};
+
+// checkIfStackEmpty();
+
+// (cleanup) delete stack if creating a new stack via drone and not on master branch
+// deletes changeset created if drone is not on master branch
+// this prevents errors that occur when trying to create subsequent changesets on a stack that doesn't have any resources yet
+// this is a super hacky way of doing this so if anyone's able to improve on this, be my guest! :D
+const cleanup = async function (changeset) {
+  let data;
+  const buildMeta = getBuildMeta(process.env);
+  const cmdInput = {
+    StackName: stackName,
+  };
+  const chgId = {
+    ChangeSetName: changeset
+  };
+  const emptyStack = await checkIfStackEmpty();
+  const deleteChangeSet = new DeleteChangeSetCommand(chgId);
+  const deleteStack = new DeleteStackCommand(cmdInput);
+  if (options.drone &&
+    (buildMeta.repoBranch != "master" && buildMeta.repoBranch != "main") &&
+    emptyStack) {
+      try {
+        const response = await client.send(deleteStack);
+        data = response;
+      } catch (err) {
+        console.error(`Error - Cleanup unsuccessful.`);
+      } finally {
+        console.log('Cleaning up temporary resources.');
+        return data;
+      };
+  } else if (options.drone && buildMeta.repoBranch != "master" && buildMeta.repoBranch != "main") {
+    try {
+      const response = await client.send(deleteChangeSet);
+      data = response;
+    } catch (err) {
+      console.error(`Error - Cleanup unsuccessful.`);
+    } finally {
+      console.log('Cleaning up temporary resources.');
+      return data;
+    };
+  };
+};
+
 // Print output
 const renderOutput = async function() {
   const changes = await describeChangeSet();
   const deployInstruction = buildDeployCmd(changes);
-  console.log(`You have ${changes.Changes.length} changes to deploy`);
+  console.log(`You have ${changes.Changes.length} changes to deploy.`);
   console.log("\n");
   printTable(changes.Changes);
   console.log("\nTo apply CF:");
   console.log(deployInstruction);
+  cleanup(changes.ChangeSetId);
 };
 // RENDER OUTPUT TO TERMINAL
 renderOutput();
-
-// delete changeset and stack if creating a new stack via drone and not on master branch
