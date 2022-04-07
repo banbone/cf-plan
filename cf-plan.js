@@ -25,8 +25,8 @@ commander
 
 const options = commander.opts();
 const template = fs.readFileSync(options.template, 'utf8');
-const parameters = fs.readFileSync(options.parameters, 'utf8');
-const tags = fs.readFileSync(options.tags, 'utf8');
+const parameters = options.parameters ? fs.readFileSync(options.parameters, 'utf8') : false;
+const tags = options.tags ? fs.readFileSync(options.tags, 'utf8') : false;
 const stackName = options.stackname;
 const [capabilities] = options.capabilities;
 
