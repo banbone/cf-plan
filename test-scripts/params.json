@@ -1,18 +1,6 @@
-{
-  "Parameters": [
-    {
-      "ParameterKey": "AdminIp",
-      "ParameterValue": "0.0.0.0/32"
-    }
-  ],
-  "Tags": [
-    {
-      "Key": "Project",
-      "Value": "CfnLoadingBar"
-    },
-    {
-      "Key": "Version",
-      "Value": "1.0.0"
-    }
-  ]
-}
+[
+  {
+    "ParameterKey": "AdminIp",
+    "ParameterValue": "0.0.0.0/32"
+  }
+]
